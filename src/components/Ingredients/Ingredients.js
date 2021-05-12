@@ -1,12 +1,25 @@
-import React, { useState, useCallback } from 'react';
+import React, { useReducer, useState, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import Search from './Search';
 import ErrorModal from '../UI/ErrorModal';
 
+const ingredientsReducer = (currentIngredients, action) => {
+  switch (action.type) {
+    case 'SET':
+      return action.ingredients;
+    case 'ADD':
+      return [...currentIngredients, action.ingredient];
+    case 'DELETE':
+      return currentIngredients.filter(ing => ing.id !== action.id);
+    default:
+      throw new Error('Should not get there!');
+  }
+};
+
 const Ingredients = () => {
-  const [ingredients, setIngredients] = useState([]);
+  const [userIngredients, dispatch] = useReducer(ingredientsReducer, []);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
@@ -24,10 +37,8 @@ const Ingredients = () => {
     )
       .then(res => res.json())
       .then(data => {
-        setIngredients(prevIngredients => {
-          setIsLoading(false);
-          return [...prevIngredients, { id: data.name, ...ingredient }];
-        });
+        setIsLoading(false);
+        dispatch({ type: 'ADD', ingredient: { id: data.name, ...ingredient } });
       })
       .catch(err => {
         setError('Something went wrong!');
@@ -35,12 +46,14 @@ const Ingredients = () => {
       });
   };
 
+  // Would set ingredients after page load too
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
-    setIngredients(filteredIngredients);
+    dispatch({ type: 'SET', ingredients: filteredIngredients });
   }, []);
 
   // remove ingredient from firebase
   const removeIngredientHandler = ingredientId => {
+    setIsLoading(true);
     fetch(
       `https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`,
       {
@@ -48,9 +61,8 @@ const Ingredients = () => {
       }
     )
       .then(() => {
-        setIngredients(prev => {
-          return prev.filter(ingredient => ingredient.id !== ingredientId);
-        });
+        dispatch({ type: 'DELETE', id: ingredientId });
+        setIsLoading(false);
       })
       .catch(err => {
         setError('We Screwed');
@@ -82,7 +94,7 @@ const Ingredients = () => {
           onClose={clearError}
         />
         <IngredientList
-          ingredients={ingredients}
+          ingredients={userIngredients}
           onRemoveItem={removeIngredientHandler}
         />
       </section>
