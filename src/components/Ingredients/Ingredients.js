@@ -28,6 +28,10 @@ const Ingredients = () => {
           setIsLoading(false);
           return [...prevIngredients, { id: data.name, ...ingredient }];
         });
+      })
+      .catch(err => {
+        setError('Something went wrong!');
+        setIsLoading(false);
       });
   };
 
@@ -70,7 +74,13 @@ const Ingredients = () => {
       />
 
       <section>
-        <Search onLoadIngredients={filteredIngredientsHandler} />
+        <Search
+          onLoadIngredients={filteredIngredientsHandler}
+          setIsLoading={setIsLoading}
+          error={error}
+          setError={setError}
+          onClose={clearError}
+        />
         <IngredientList
           ingredients={ingredients}
           onRemoveItem={removeIngredientHandler}

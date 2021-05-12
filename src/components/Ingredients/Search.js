@@ -1,14 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Card from '../UI/Card';
 import './Search.css';
+import ErrorModal from '../UI/ErrorModal';
 
 const Search = React.memo(props => {
-  const { onLoadIngredients } = props;
+  // props
+  const { onLoadIngredients, setIsLoading, error, onClose, setError } = props;
+
+  // states
   const [enteredFilter, setEnteredFilter] = useState('');
+
+  // refs
   const inputRef = useRef();
+
+  // methods
   useEffect(() => {
     const timer = setTimeout(() => {
       if (enteredFilter === inputRef.current.value) {
+        setIsLoading(true);
         const query =
           enteredFilter.length === 0
             ? ''
@@ -19,6 +28,7 @@ const Search = React.memo(props => {
         )
           .then(res => res.json())
           .then(data => {
+            setIsLoading(false);
             const loadedIngredients = [];
             for (const key in data) {
               loadedIngredients.push({
@@ -28,6 +38,10 @@ const Search = React.memo(props => {
               });
             }
             onLoadIngredients(loadedIngredients);
+          })
+          .catch(error => {
+            setError('Something went wrong!');
+            setIsLoading(false);
           });
       }
       console.log('time out');
@@ -50,6 +64,7 @@ const Search = React.memo(props => {
           />
         </div>
       </Card>
+      {error && <ErrorModal onClose={onClose}>{error}</ErrorModal>}
     </section>
   );
 });
