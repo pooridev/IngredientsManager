@@ -44,13 +44,12 @@ const Search = React.memo(props => {
             setIsLoading(false);
           });
       }
-      console.log('time out');
     }, 500);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [enteredFilter, onLoadIngredients]);
+  }, [enteredFilter, onLoadIngredients, inputRef]);
   return (
     <section className='search'>
       <Card>
