@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
 import Search from './Search';
+import ErrorModal from '../UI/ErrorModal';
 
 const Ingredients = () => {
   const [ingredients, setIngredients] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
   const addIngredientHandler = ingredient => {
+    setIsLoading(true);
     fetch(
       'https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients.json',
       {
@@ -21,6 +25,7 @@ const Ingredients = () => {
       .then(res => res.json())
       .then(data => {
         setIngredients(prevIngredients => {
+          setIsLoading(false);
           return [...prevIngredients, { id: data.name, ...ingredient }];
         });
       });
@@ -30,22 +35,39 @@ const Ingredients = () => {
     setIngredients(filteredIngredients);
   }, []);
 
+  // remove ingredient from firebase
   const removeIngredientHandler = ingredientId => {
     fetch(
       `https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`,
       {
         method: 'DELETE'
       }
-    ).then(() => {
-      setIngredients(prev => {
-        return prev.filter(ingredient => ingredient.id !== ingredientId);
+    )
+      .then(() => {
+        setIngredients(prev => {
+          return prev.filter(ingredient => ingredient.id !== ingredientId);
+        });
+      })
+      .catch(err => {
+        setError('We Screwed');
+        setIsLoading(false);
       });
-    });
   };
 
+  // will clear error & hide ErrorModal
+  const clearError = () => {
+    setError();
+  };
   return (
-    <div className='App'>
-      <IngredientForm onAddIngredient={addIngredientHandler} />
+    <main className='App'>
+      {error && <ErrorModal onClose={clearError} />}
+      <IngredientForm
+        onAddIngredient={addIngredientHandler}
+        loading={isLoading}
+        onClose={clearError}
+        error={error}
+        setError={setError}
+      />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
@@ -54,7 +76,7 @@ const Ingredients = () => {
           onRemoveItem={removeIngredientHandler}
         />
       </section>
-    </div>
+    </main>
   );
 };
 
