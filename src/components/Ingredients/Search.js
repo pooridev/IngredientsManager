@@ -49,7 +49,7 @@ const Search = React.memo(props => {
     return () => {
       clearTimeout(timer);
     };
-  }, [enteredFilter, onLoadIngredients, inputRef]);
+  }, [enteredFilter, onLoadIngredients, inputRef, setError, setIsLoading]);
   return (
     <section className='search'>
       <Card>
