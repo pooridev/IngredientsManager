@@ -7,7 +7,7 @@ import ErrorModal from '../UI/ErrorModal';
 
 const IngredientForm = React.memo(props => {
   // props
-  const { onAddIngredient, loading, error, setError, onClose } = props;
+  const { onAddIngredient, httpState, dispatchHttp, onClose } = props;
 
   // states
   const [enteredTitle, setEnteredTitle] = useState('');
@@ -17,14 +17,19 @@ const IngredientForm = React.memo(props => {
   const submitHandler = event => {
     event.preventDefault();
     if (enteredTitle === '' || enteredAmount === '') {
-      return setError('You gotta add something');
+      return dispatchHttp({
+        type: 'ERROR',
+        errorMessage: 'Please Don\'t leave any inputs alone 😪'
+      });
     }
     onAddIngredient({ title: enteredTitle, amount: enteredAmount });
   };
 
   return (
     <section className='ingredient-form'>
-      {error && <ErrorModal onClose={onClose}>{error}</ErrorModal>}
+      {httpState.error && (
+        <ErrorModal onClose={onClose}>{httpState.error}</ErrorModal>
+      )}
       <Card>
         <form onSubmit={submitHandler}>
           <div className='form-control'>
@@ -51,7 +56,7 @@ const IngredientForm = React.memo(props => {
           </div>
           <div className='ingredient-form__actions'>
             <button type='submit'>Add Ingredient</button>
-            {loading && <LoadingIndicator />}
+            {httpState.loading && <LoadingIndicator />}
           </div>
         </form>
       </Card>

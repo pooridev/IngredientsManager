@@ -5,7 +5,7 @@ import ErrorModal from '../UI/ErrorModal';
 
 const Search = React.memo(props => {
   // props
-  const { onLoadIngredients, setIsLoading, error, onClose, setError } = props;
+  const { onLoadIngredients, error, onClose, dispatchHttp } = props;
 
   // states
   const [enteredFilter, setEnteredFilter] = useState('');
@@ -17,7 +17,7 @@ const Search = React.memo(props => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (enteredFilter === inputRef.current.value) {
-        setIsLoading(true);
+        dispatchHttp({ type: 'SEND' });
         const query =
           enteredFilter.length === 0
             ? ''
@@ -28,7 +28,7 @@ const Search = React.memo(props => {
         )
           .then(res => res.json())
           .then(data => {
-            setIsLoading(false);
+            dispatchHttp({ type: 'RESPONSE' });
             const loadedIngredients = [];
             for (const key in data) {
               loadedIngredients.push({
@@ -40,8 +40,9 @@ const Search = React.memo(props => {
             onLoadIngredients(loadedIngredients);
           })
           .catch(error => {
-            setError('Something went wrong!');
-            setIsLoading(false);
+            // setError('Something went wrong!');
+            // setIsLoading(false);
+            dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong!' });
           });
       }
     }, 500);
@@ -49,7 +50,7 @@ const Search = React.memo(props => {
     return () => {
       clearTimeout(timer);
     };
-  }, [enteredFilter, onLoadIngredients, inputRef, setError, setIsLoading]);
+  }, [enteredFilter, onLoadIngredients, inputRef, dispatchHttp]);
   return (
     <section className='search'>
       <Card>
