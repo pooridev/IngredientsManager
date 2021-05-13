@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useCallback } from 'react';
+import React, { useReducer, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -44,11 +44,8 @@ const Ingredients = () => {
     loading: false,
     error: null
   });
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState();
 
   const addIngredientHandler = ingredient => {
-    // setIsLoading(true);
     dispatchHttp({ type: 'SEND' });
     fetch(
       'https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients.json',
@@ -62,13 +59,10 @@ const Ingredients = () => {
     )
       .then(res => res.json())
       .then(data => {
-        // setIsLoading(false);
         dispatchHttp({ type: 'RESPONSE' });
         dispatch({ type: 'ADD', ingredient: { id: data.name, ...ingredient } });
       })
       .catch(err => {
-        // setError('Something went wrong!');
-        // setIsLoading(false);
         dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong!' });
       });
   };
@@ -80,7 +74,6 @@ const Ingredients = () => {
 
   // remove ingredient from firebase
   const removeIngredientHandler = ingredientId => {
-    // setIsLoading(true);
     dispatchHttp({ type: 'SEND' });
     fetch(
       `https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`,
@@ -90,19 +83,15 @@ const Ingredients = () => {
     )
       .then(() => {
         dispatch({ type: 'DELETE', id: ingredientId });
-        // setIsLoading(false);
         dispatchHttp({ type: 'RESPONSE' });
       })
       .catch(err => {
-        // setError('We Screwed');
-        // setIsLoading(false);
         dispatchHttp({ type: 'ERROR' });
       });
   };
 
   // would clear error & hide ErrorModal
   const clearError = () => {
-    // setError();
     dispatchHttp({ type: 'CLEAR_ERR' });
   };
   return (

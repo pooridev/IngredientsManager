@@ -40,8 +40,6 @@ const Search = React.memo(props => {
             onLoadIngredients(loadedIngredients);
           })
           .catch(error => {
-            // setError('Something went wrong!');
-            // setIsLoading(false);
             dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong!' });
           });
       }
@@ -50,7 +48,7 @@ const Search = React.memo(props => {
     return () => {
       clearTimeout(timer);
     };
-  }, [enteredFilter, onLoadIngredients, inputRef, dispatchHttp]);
+  }, [enteredFilter, onLoadIngredients, dispatchHttp]);
   return (
     <section className='search'>
       <Card>
