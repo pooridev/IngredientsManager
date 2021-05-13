@@ -45,7 +45,7 @@ const Ingredients = () => {
     error: null
   });
 
-  const addIngredientHandler = ingredient => {
+  const addIngredientHandler = useCallback(ingredient => {
     dispatchHttp({ type: 'SEND' });
     fetch(
       'https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients.json',
@@ -65,7 +65,7 @@ const Ingredients = () => {
       .catch(err => {
         dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong!' });
       });
-  };
+  }, []);
 
   // Would set ingredients after page load too
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
@@ -73,7 +73,7 @@ const Ingredients = () => {
   }, []);
 
   // remove ingredient from firebase
-  const removeIngredientHandler = ingredientId => {
+  const removeIngredientHandler = useCallback(ingredientId => {
     dispatchHttp({ type: 'SEND' });
     fetch(
       `https://react-hooks-248e2-default-rtdb.firebaseio.com/ingredients/${ingredientId}.json`,
@@ -88,12 +88,12 @@ const Ingredients = () => {
       .catch(err => {
         dispatchHttp({ type: 'ERROR' });
       });
-  };
+  }, []);
 
   // would clear error & hide ErrorModal
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatchHttp({ type: 'CLEAR_ERR' });
-  };
+  }, []);
   return (
     <main className='App'>
       {httpState.error && <ErrorModal onClose={clearError} />}

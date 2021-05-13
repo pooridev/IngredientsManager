@@ -19,7 +19,7 @@ const IngredientForm = React.memo(props => {
     if (enteredTitle === '' || enteredAmount === '') {
       return dispatchHttp({
         type: 'ERROR',
-        errorMessage: 'Please Don\'t leave any inputs alone 😪'
+        errorMessage: "Please Don't leave any inputs alone 😪"
       });
     }
     onAddIngredient({ title: enteredTitle, amount: enteredAmount });
@@ -46,6 +46,8 @@ const IngredientForm = React.memo(props => {
           <div className='form-control'>
             <label htmlFor='amount'>Amount</label>
             <input
+              min='1'
+              max='99'
               type='number'
               id='amount'
               value={enteredAmount}
