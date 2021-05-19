@@ -1,16 +1,17 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import './IngredientList.css';
 
-const IngredientList = memo(props => {
+const IngredientList = props => {
   const { onRemoveItem, ingredients } = props;
-
   return (
     <section className='ingredient-list'>
       <h2>Loaded Ingredients</h2>
       <ul>
         {ingredients.map(ig => (
-          <li key={ig.id} onClick={onRemoveItem.bind(this, ig.id)}>
+          <li
+            key={Math.floor(Math.random() * 999)}
+            onClick={onRemoveItem.bind(this, ig.id)}>
             <span>{ig.title}</span>
             <span>{ig.amount}x</span>
           </li>
@@ -18,6 +19,6 @@ const IngredientList = memo(props => {
       </ul>
     </section>
   );
-});
+};
 
 export default IngredientList;
